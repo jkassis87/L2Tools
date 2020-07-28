@@ -12,7 +12,18 @@
 		<a href="{{ url_for('r1check') }}">R1soft Check</a> - 
 		<a href="{{ url_for('diskcheck') }}">High Disk Check</a> -
 		<a href="{{ url_for('wpcheck') }}">WP Attack Check</a> -
+		<a href="{{ url_for('timecheck') }}">Server Time Activity CHeck</a>
         </div>
+		
+		<h3> {{ title }} </h3>
+		
+		<form>
+			<label for="Host">Host:</label><br>
+			<input type="text" id="Host" name="Host"><br>
+			<label for="Pass">Pass:</label><br>
+			<input type="text" id="Host" name="Host"><br><br>
+			<input type="submit" value="Login">
+		</form>
 
 	{% block content %}{% endblock %}
 
