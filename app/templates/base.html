@@ -1,0 +1,20 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - L2Tools</title>
+        {% else %}
+        <title>L2Tools</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+        L2 Troubleshooting Tools:<br>
+		<a href="{{ url_for('r1check') }}">R1soft Check</a> - 
+		<a href="{{ url_for('diskcheck') }}">High Disk Check</a> -
+		<a href="{{ url_for('wpcheck') }}">WP Attack Check</a> -
+        </div>
+
+	{% block content %}{% endblock %}
+
+    </body>
+</html>
