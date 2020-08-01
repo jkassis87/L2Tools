@@ -81,13 +81,13 @@ def diskcheck():
         #### START prepares ssh commands to run
         
         # lists all files larger than ssh_minfilesize
-        ssh_bigfilesall = r"find / -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; | awk {'print $5, $9'} | sort -h"
+        ssh_bigfilesall = r"find / -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2>/dev/null | awk {'print $5, $9'} | sort -h"
         
         # lists all files in /home/ and /backup/ larger than ssh_minfilesize
-        ssh_bigfiles = r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; | awk {'print $5, $9'} | sort -h"
+        ssh_bigfiles = r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2>/dev/null | awk {'print $5, $9'} | sort -h"
         
         # lists largest 20 folders under /home/ 
-        ssh_bigdirs = r"du -Sh / | sort -rh | head -20"
+        ssh_bigdirs = r"du -Sh / 2>/dev/null | sort -rh | head -20"
         
         #### END prepares ssh commands to run
         
