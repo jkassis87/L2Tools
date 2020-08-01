@@ -92,8 +92,10 @@ def diskcheck():
         #### END prepares ssh commands to run
         
         # logs in to host, runs commands, outputs results to new window
+        endexec = r'{} \;'
         with shell:
-            result = shell.run(['find', r'/home/', '-type', 'f', '-size', f'+{ssh_minfilesize}'])
+            #result = shell.run(['find', r'/home/', '-type', 'f', '-size', f'+{ssh_minfilesize} ', '| xargs ls -alh'])
+            result = shell.run(["sh", "-c", r"find /home/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}"])
             result = result.output.decode()
             #result.headers["content-type"] = "text/plain"
             #.encoding("utf8")
