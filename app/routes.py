@@ -1,6 +1,6 @@
-from flask import render_template, request
+from flask import render_template, request, make_response
 from app import app
-import spur
+import spur, sys
 
 @app.route('/')
 @app.route('/index')
@@ -81,7 +81,7 @@ def diskcheck():
         #### START prepares ssh commands to run
         
         # lists all files larger than ssh_minfilesize
-        ssh_bigfilesall = r"find / -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2>/dev/null | awk {'print $5, $9'} | sort -h"
+        ssh_bigfilesall = r"find / -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2> /dev/null | awk {'print $5, $9'} | sort -h"
         
         # lists all files in /home/ and /backup/ larger than ssh_minfilesize
         ssh_bigfiles = r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2>/dev/null | awk {'print $5, $9'} | sort -h"
@@ -92,13 +92,14 @@ def diskcheck():
         #### END prepares ssh commands to run
         
         # logs in to host, runs commands, outputs results to new window
-        #with shell:
-            #result = shell.run(["uptime"])
-            #return(result.output)
-        return render_template('diskcheck_results.html', 
-                ssh_bigdirs=ssh_bigdirs, 
-                ssh_bigfiles=ssh_bigfiles, 
-                ssh_bigfilesall=ssh_bigfilesall)
+        with shell:
+            result = shell.run(['find', r'/home/', '-type', 'f', '-size', f'+{ssh_minfilesize}'])
+            result = result.output.decode()
+            #result.headers["content-type"] = "text/plain"
+            #.encoding("utf8")
+            return render_template('diskcheck_results.html', ssh_bigfiles=result)
+            
+        #return render_template('diskcheck_results.html', ssh_bigdirs=ssh_bigdirs)
                 
     return render_template('diskcheck.html',
         title='Disk Usage Check')
