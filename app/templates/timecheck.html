@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<form method="POST">
+		Hostname: 	 <input type="text" name="sshhost"><br>
+		Port Number: <input type="text" name="sshport", value="22"><br>
+		Username: 	 <input type="text" name="sshuser", value="root"><br>
+		Password: 	 <input type="password" name="sshpass"><br>
+		Date & Time: <input type="password" name="sshpass">Eg: 08/May/2020:14:27<br>
+	<input type="submit" value="Submit"><br>
+	</form>
+{% endblock %}
+
