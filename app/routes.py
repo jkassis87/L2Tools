@@ -77,24 +77,7 @@ def diskcheck():
                         
         # options in ssh command
         ssh_minfilesize = request.form['minfilesize']
-        
-        
-        
-        # lists all files larger than ssh_minfilesize
-        ssh_bigfilesall = r"find / -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2> /dev/null | awk {'print $5, $9'} | sort -h"
-        
-        # lists all files in /home/ and /backup/ larger than ssh_minfilesize
-        ssh_bigfiles = r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2>/dev/null | awk {'print $5, $9'} | sort -h"
-        
-        # lists largest 20 folders under /home/ 
-        ssh_bigdirs = r"du -Sh / 2>/dev/null | sort -rh | head -20"
-        
-        #### END prepares ssh commands to run
-        
-        # logs in to host, runs commands, outputs results to new window
-        endexec = r'{} \;'
-        
-        
+                
         with shell:
         
             #### START prepares ssh commands to run
@@ -113,8 +96,6 @@ def diskcheck():
             return render_template('diskcheck_results.html', 
                                     com_largefiles=com_largefiles, str_largefiles=str_largefiles,
                                     com_largedirs=com_largedirs, str_largedirs=str_largedirs)
-            
-        #return render_template('diskcheck_results.html', ssh_bigdirs=ssh_bigdirs)
                 
     return render_template('diskcheck.html',
         title='Disk Usage Check')
