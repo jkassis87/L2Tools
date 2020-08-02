@@ -2,18 +2,18 @@
 
 {% block content %}
 
-	<h4>Title:</h4> Find large files under /home/ and /backup/
+	<strong>Title:</strong> Find large files under /home/ and /backup/
 	<br/>
-	<h4>Command:</h4> {{ str_largefiles }}
-	<br/>
-	<h4>Results</h4>
+	<strong>Command:</strong> {{ str_largefiles }}<br/>
+	<strong>Results</strong>
 	<pre> {{ com_largefiles.output.decode() }} </pre>
 	<br/>
-	<h4>Title:</h4> lists 20 largest folders under /home/ and /backup/
+	
+	<strong>Title:</strong> lists 20 largest folders under /home/ and /backup/
 	<br/>
-	<h4>Command:</h4> {{ str_largedirs }}
+	<strong>Command:</strong> {{ str_largedirs }}
 	<br/>
-	<h4>Results</h4>
+	<strong>Results</strong>
 	<pre> {{ com_largedirs.output.decode() }} </pre>
 	
 {% endblock %}

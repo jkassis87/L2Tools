@@ -2,27 +2,25 @@
 
 {% block content %}
 
-	<h4>Title:</h4> Pings R1soft server 4 times
-	<br/>
-	<h4>Command:</h4> {{ str_str_r1ping }}
-	<br/>
-	<h4>Results</h4>
+	<strong>Title:</strong> Pings R1soft server 4 times<br/>
+	<strong>Command:</strong> {{ str_r1ping }}<br/>
+	<strong>Results</strong>
 	<pre> {{ com_r1ping.output.decode() }} </pre>
 	<br/>
 	
-	<h4>Title:</h4> Gets the kernel version
+	<strong>Title:</strong> Gets the kernel version
 	<br/>
-	<h4>Command:</h4> {{ str_kernelver }}
+	<strong>Command:</strong> {{ str_kernelver }}
 	<br/>
-	<h4>Results</h4>
+	<strong>Results</strong>
 	<pre> {{ com_kernelver.output.decode() }} </pre>
 	<br/>
 	
-	<h4>Title:</h4> Pings R1soft server
+	<strong>Title:</strong> Pings R1soft server
 	<br/>
-	<h4>Command:</h4> {{ str_kernelmods }}
+	<strong>Command:</strong> {{ str_kernelmods }}
 	<br/>
-	<h4>Results</h4>
+	<strong>Results</strong>
 	<pre> {{ com_kernelmods.output.decode() }} </pre>
 	
 {% endblock %}
