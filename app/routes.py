@@ -78,7 +78,7 @@ def diskcheck():
         # options in ssh command
         ssh_minfilesize = request.form['minfilesize']
         
-        #### START prepares ssh commands to run
+        
         
         # lists all files larger than ssh_minfilesize
         ssh_bigfilesall = r"find / -type f -size +" + ssh_minfilesize + r"M -exec ls -lh {} \; 2> /dev/null | awk {'print $5, $9'} | sort -h"
@@ -93,13 +93,26 @@ def diskcheck():
         
         # logs in to host, runs commands, outputs results to new window
         endexec = r'{} \;'
+        
+        
         with shell:
-            #result = shell.run(['find', r'/home/', '-type', 'f', '-size', f'+{ssh_minfilesize} ', '| xargs ls -alh'])
-            result = shell.run(["sh", "-c", r"find /home/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}"])
-            result = result.output.decode()
-            #result.headers["content-type"] = "text/plain"
-            #.encoding("utf8")
-            return render_template('diskcheck_results.html', ssh_bigfiles=result)
+        
+            #### START prepares ssh commands to run
+            
+            # lists all files larger than ssh_minfilesize under /home/ and /backup/
+            com_largefiles = shell.run(["sh", "-c", r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}  | sort -h"])
+            str_largefiles = r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}  | sort -h"
+            
+            # lists 20 largest folders under /home/ and /backup/
+            com_largedirs = shell.run(["sh", "-c", r"du -Sh /home/ /backup/ | sort -rh | head -20"])
+            str_largedirs = r"du -Sh /home/ /backup/ | sort -rh | head -20"
+            
+            #### END prepares ssh commands to run
+            
+            # outputs to diskcheck_results.html and renders the ssh command results
+            return render_template('diskcheck_results.html', 
+                                    com_largefiles=com_largefiles, str_largefiles=str_largefiles,
+                                    com_largedirs=com_largedirs, str_largedirs=str_largedirs)
             
         #return render_template('diskcheck_results.html', ssh_bigdirs=ssh_bigdirs)
                 
