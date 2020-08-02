@@ -30,28 +30,30 @@ def r1check():
         # options in ssh command
         sshhosttype = request.form['hosttype']
         sshr1server = request.form['r1server']
+                
+        with shell:
         
-        #### START END prepares ssh commands to run
-        
-        # pings r1soft server
-        ssh_r1ping = f"ping {sshr1server}"
-        
-        # gets list of installed kernel modules
-        ssh_kernelver = r"uname -r"
-        
-        # gets list of installed kernels and modules
-        ssh_kernelmods = r"rpm -qa | grep kernel"
-        
-        #### END prepares ssh commands to run
-        
-        # logs in to host, runs commands, outputs results to new window
-        #with shell:
-            #result = shell.run(["uptime"])
-            #return(result.output)
-        return render_template('r1check_results.html', 
-                ssh_r1ping=ssh_r1ping, 
-                ssh_kernelver=ssh_kernelver, 
-                ssh_kernelmods=ssh_kernelmods)
+            #### START prepares ssh commands to run
+            
+            # pings the r1soft server 4 times
+            com_r1ping = shell.run(["sh", "-c", f"ping -c 4 {sshr1server}"])
+            str_r1ping = f"ping -c 4 {sshr1server}"
+
+            # gets the kernel version
+            com_kernelver = shell.run(["sh", "-c", "uname -r"])
+            str_kernelver = "uname -r"
+
+            # lists installed kernel modules
+            com_kernelmods = shell.run(["sh", "-c", r"rpm -qa | grep kernel"])
+            str_kernelmods = r"rpm -qa | grep kernel"
+
+            #### END prepares ssh commands to run
+            
+            # outputs to r1check_results.html and renders the ssh command results
+            return render_template('r1check_results.html',
+                                com_r1ping=com_r1ping, str_r1ping=str_r1ping,
+                                com_kernelver=com_kernelver, str_kernelver=str_kernelver,
+                                com_kernelmods=com_kernelmods, str_kernelmods=str_kernelmods)
         
     return render_template('r1check.html', 
         title='R1soft Connection Checker')
