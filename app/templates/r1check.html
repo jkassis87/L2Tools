@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 	<form method="POST">
-		Hostname: <input type="text" name="sshhost"><br>
+		Hostname: <input type="text" name="sshhost", value="shshort.tk"><br>
 		Port Number: <input type="text" name="sshport", value="22"><br>
 		Username: <input type="text" name="sshuser", value="root"><br>
 		Password: <input type="password" name="sshpass"><br>
+		
 		Host Type: <select name="hosttype" id="hosttype">
 					  <option value="DP Dedi">DP Dedi</option>
 					  <option value="DP VPS">DP VPS</option>
 					  <option value="CR VPS">CR VPS</option>
 					  <option value="TERRA">TERRA</option>
 					</select>
+					
 		R1 Server: <select name="r1server" id="r1server">
 					  <option value="CURRENT">CURRENT</option>
 					  <option value="nxsrv16.ded.voc.digitalpacific.com.au">nxsrv16</option>
@@ -21,4 +24,5 @@
 		
 	<input type="submit" value="Submit"><br>
 	</form>
+	
 {% endblock %}

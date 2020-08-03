@@ -35,6 +35,14 @@ def r1check():
         
             #### START prepares ssh commands to run
             
+            # lists network routes
+            com_route = shell.run(["sh", "-c", f"route -n"])
+            str_route = f"route -n"
+            
+            # Lists network interfaces
+            com_nics = shell.run(["sh", "-c", f"ip a"])
+            str_nics = "ip a"
+            
             # pings the r1soft server 4 times
             com_r1ping = shell.run(["sh", "-c", f"ping -c 4 {sshr1server}"])
             str_r1ping = f"ping -c 4 {sshr1server}"
@@ -52,8 +60,12 @@ def r1check():
             # outputs to r1check_results.html and renders the ssh command results
             return render_template('r1check_results.html',
                                 com_r1ping=com_r1ping, str_r1ping=str_r1ping,
+                                com_nics=com_nics, str_nics=str_nics,
+                                com_route=com_route, str_route=str_route,
                                 com_kernelver=com_kernelver, str_kernelver=str_kernelver,
-                                com_kernelmods=com_kernelmods, str_kernelmods=str_kernelmods)
+                                com_kernelmods=com_kernelmods, str_kernelmods=str_kernelmods,
+                                sshhost=sshhost, sshhosttype=sshhosttype, sshr1server=sshr1server
+                                )
         
     return render_template('r1check.html', 
         title='R1soft Connection Checker')
@@ -143,7 +155,7 @@ def wpcheck():
             # turns list into dict
             a_dict = {k:v for k,v in (x.split(' ') for x in a_str) } 
             
-            # swaps the key and value
+            # swaps the key and value, makes the IP address the key
             a_dict = {v:k for (k, v) in a_dict.items()}
             
             # converts value from str into list
@@ -171,7 +183,7 @@ def wpcheck():
             
             # converts the dict to json
             check_results = json.dumps(a_dict, separators=(',', ':')).replace("],", "],\n")
-            check_results = check_results.translate(str.maketrans({'{': '', '}': '', '"': '', '[': '', ']': ''}))
+            check_results = check_results.translate(str.maketrans({'{': '', '}': '', '"': '', '[': ''}))
             
             # outputs to diskcheck_results.html and renders the ssh command results
             #return jsonify(json.dumps(a_dict))
