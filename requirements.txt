@@ -1,3 +1,9 @@
+[modules]
 python3.6+
 flask
 spur
+geoip2
+
+[other]
+GeoLite2-ASN.mmdb (place in app/ folder)
+GeoLite2-City.mmdb (place in app/ folder)
