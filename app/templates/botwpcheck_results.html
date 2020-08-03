@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-	 {{ check_results }} 
+
+	<strong>Title:</strong>IP's hitting xmlrpc.php and wp-login.php<br/>
+	<strong>Command:</strong> {{ str_atkcheck }}<br/>
+	<strong>Results</strong>
+	<pre> {{ check_wpattack }} </pre>
+	<br/>
+	
 {% endblock %}

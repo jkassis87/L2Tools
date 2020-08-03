@@ -137,9 +137,9 @@ def wpcheck():
         
             #### START prepares ssh commands to run
             
-            # lists all files larger than ssh_minfilesize under /home/ and /backup/
-            com_atkcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\|bot' |  awk '{print $1}' | sort | uniq -c | sort -n"])
-            str_atkcheck = r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\|bot' |  awk '{print $1}' | sort | uniq -c | sort -n"
+            # checks access logs for xmlrpc and wp-login hits
+            com_atkcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\' |  awk '{print $1}' | sort | uniq -c | sort -n"])
+            str_atkcheck = r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\' |  awk '{print $1}' | sort | uniq -c | sort -n"
             
             #### END prepares ssh commands to run
             
@@ -167,14 +167,12 @@ def wpcheck():
             
             with geoip2.database.Reader('GeoLite2-City.mmdb') as reader:
                 for k, v in a_dict.items():
-                    print(type(v))
                     response = reader.city(k)
                     i = response.country.name
                     v.append(i)
                 
             with geoip2.database.Reader('GeoLite2-ASN.mmdb') as reader:
                 for k, v in a_dict.items():
-                    print(type(v))
                     response = reader.asn(k)
                     i = response.autonomous_system_organization
                     v.append(i)
@@ -182,12 +180,13 @@ def wpcheck():
             ### END add geoip data to dict
             
             # converts the dict to json
-            check_results = json.dumps(a_dict, separators=(',', ':')).replace("],", "],\n")
-            check_results = check_results.translate(str.maketrans({'{': '', '}': '', '"': '', '[': ''}))
+            check_wpattack = json.dumps(a_dict, separators=(',', ':')).replace("],", "\n")
+            check_wpattack = check_wpattack.translate(str.maketrans({'{': '', '}': '', '"': '', '[': '', ']': '', ',': ' - ', ':': ': '}))
             
             # outputs to diskcheck_results.html and renders the ssh command results
             #return jsonify(json.dumps(a_dict))
-            return render_template('botwpcheck_results.html',  check_results=check_results)
+            return render_template('botwpcheck_results.html',  
+                                    check_wpattack=check_wpattack, str_atkcheck=str_atkcheck)
         
         
     return render_template('botwpcheck.html',
