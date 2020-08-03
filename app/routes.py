@@ -170,7 +170,8 @@ def wpcheck():
             ### END add geoip data to dict
             
             # converts the dict to json
-            check_results = json.dumps(a_dict, indent=2, separators=(',', ':'))            
+            check_results = json.dumps(a_dict, separators=(',', ':')).replace("],", "],\n")
+            check_results = check_results.translate(str.maketrans({'{': '', '}': '', '"': '', '[': '', ']': ''}))
             
             # outputs to diskcheck_results.html and renders the ssh command results
             #return jsonify(json.dumps(a_dict))
