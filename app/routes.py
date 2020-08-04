@@ -152,7 +152,7 @@ def wpcheck():
             
             #### END prepares ssh commands to run
             
-            ### START converts the com_atkcheck results to a usable dict
+            ### START converts the command outputs from binary to dict
             
             # changes com_atkcheck (a) and com_botcheck (b) type from binary to multiline str
             a_str = com_atkcheck.output.decode()
@@ -181,7 +181,7 @@ def wpcheck():
             
             b_dict = {k:[v] for (k, v) in b_dict.items()}
             
-            ### END converts the com_atkcheck results to a usable dict
+            ### END converts the command outputs from binary to dict
             
             ### START add geoip data to dict
             
@@ -217,7 +217,6 @@ def wpcheck():
             check_botattack = check_botattack.translate(str.maketrans({'{': '', '}': '', '"': '', '[': '', ']': '', ',': ' - ', ':': ': '}))
             
             # outputs to diskcheck_results.html and renders the ssh command results
-            #return jsonify(json.dumps(a_dict))
             return render_template('botwpcheck_results.html',  
                                     check_wpattack=check_wpattack, str_atkcheck=str_atkcheck,
                                     check_botattack=check_botattack, str_botcheck=str_botcheck,
@@ -278,9 +277,14 @@ def customcommand():
                         password=sshpass,
                         port = sshport,
                         missing_host_key=spur.ssh.MissingHostKey.accept)
-                        
+        
+        # options in ssh command
+        sshcustom = request.form['sshcustom']
+        
         #### START prepares ssh commands to run                        
 
+        com_custom = shell.run(["sh", "-c", f"{sshcustom}"])
+        str_custom = f"{sshcustom}"
 
         #### END prepares ssh commands to run
 
@@ -288,7 +292,9 @@ def customcommand():
         #with shell:
             #result = shell.run(["uptime"])
             #return(result.output)        
-        return render_template('customcommand_results.html')
+        return render_template('customcommand_results.html',
+                                com_custom=com_custom, str_custom=str_custom,
+                                sshhost=sshhost)
                         
     return render_template('customcommand.html',
         title='Custom Command')
