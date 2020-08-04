@@ -1,0 +1,16 @@
+Add SSH commands for r1check
+Add SSH commands for botwpcheck
+Add SSH commands for diskcheck
+Add SSH commands for timecheck
+Custom Comands - Block rm and rmdir (add error checking)
+Time Check - add calendar and ssh code to account for timezone
+Add error checking for everything
+CSS - Align forms properly https://stackoverflow.com/questions/4309950/how-to-align-input-forms-in-html/23741073
+Add ssh command preview
+In r1check, customise r1server dropdown options based on hosttype answer
+In r1check, add smarts in CURRENT to determine current r1soft server
+In r1check, add smarts to check route
+In r1check, have com_kernelmods return output based on com_kernelver results
+Update code in botwpcheck_results.html and route
+Update code in customcommand_results.html and route
+Update code in timecheck_results.html and route

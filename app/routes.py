@@ -96,9 +96,13 @@ def diskcheck():
         
             #### START prepares ssh commands to run
             
+            # displays disk usage numbers
+            com_df = shell.run(["sh", "-c", r"df -h -t ext4 -t ext3"])
+            str_df = r"df -h -t ext4 -t ext3"
+            
             # lists all files larger than ssh_minfilesize under /home/ and /backup/
-            com_largefiles = shell.run(["sh", "-c", r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}  | sort -h"])
-            str_largefiles = r"find /home/ /backup/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}  | sort -h"
+            com_largefiles = shell.run(["sh", "-c", r"find /home/ /backup/ /var/log/ /usr/local/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}  | sort -h"])
+            str_largefiles = r"find /home/ /backup/ /var/log/ /usr/local/ -type f -size +" + ssh_minfilesize + " -exec ls -lh {} \; | awk {'print $5, $9'}  | sort -h"
             
             # lists 20 largest folders under /home/ and /backup/
             com_largedirs = shell.run(["sh", "-c", r"du -Sh /home/ /backup/ | sort -rh | head -20"])
@@ -109,7 +113,9 @@ def diskcheck():
             # outputs to diskcheck_results.html and renders the ssh command results
             return render_template('diskcheck_results.html', 
                                     com_largefiles=com_largefiles, str_largefiles=str_largefiles,
-                                    com_largedirs=com_largedirs, str_largedirs=str_largedirs)
+                                    com_largedirs=com_largedirs, str_largedirs=str_largedirs,
+                                    com_df=com_df, str_df=str_df,
+                                    sshhost=sshhost, ssh_minfilesize=ssh_minfilesize)
                 
     return render_template('diskcheck.html',
         title='Disk Usage Check')
@@ -141,25 +147,39 @@ def wpcheck():
             com_atkcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\' |  awk '{print $1}' | sort | uniq -c | sort -n"])
             str_atkcheck = r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\' |  awk '{print $1}' | sort | uniq -c | sort -n"
             
+            com_botcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -i 'semrush\|dotbot\|mj12\|ahrefs\|yandex\' |  awk '{print $1}' | sort | uniq -c | sort -n"])
+            str_botcheck = r"less /home/*/access-logs/* | grep -i 'semrush\|dotbot\|mj12\|ahrefs\|yandex\' |  awk '{print $1}' | sort | uniq -c | sort -n"
+            
             #### END prepares ssh commands to run
             
             ### START converts the com_atkcheck results to a usable dict
             
-            # changes com_atkcheck type from binary to multiline str
+            # changes com_atkcheck (a) and com_botcheck (b) type from binary to multiline str
             a_str = com_atkcheck.output.decode()
             a_str = a_str.splitlines()
             
-            # converts atkcheck_str from multiline str to list
+            b_str = com_botcheck.output.decode()
+            b_str = b_str.splitlines()
+            
+            # converts atkcheck_str (a) and com_botcheck (b) from multiline str to list
             a_str = [re.sub('     ', '', i) for i in a_str]
             
+            b_str = [re.sub('     ', '', i) for i in b_str]
+            
             # turns list into dict
-            a_dict = {k:v for k,v in (x.split(' ') for x in a_str) } 
+            a_dict = {k:v for k,v in (x.split(' ') for x in a_str) }
+            
+            b_dict = {k:v for k,v in (x.split(' ') for x in b_str) } 
             
             # swaps the key and value, makes the IP address the key
             a_dict = {v:k for (k, v) in a_dict.items()}
             
-            # converts value from str into list
+            b_dict = {v:k for (k, v) in b_dict.items()}
+            
+            # converts values in the dict from str into list, to allow multiple values per key (IP address)
             a_dict = {k:[v] for (k, v) in a_dict.items()}
+            
+            b_dict = {k:[v] for (k, v) in b_dict.items()}
             
             ### END converts the com_atkcheck results to a usable dict
             
@@ -170,23 +190,38 @@ def wpcheck():
                     response = reader.city(k)
                     i = response.country.name
                     v.append(i)
+                    
+                for k, v in b_dict.items():
+                    response = reader.city(k)
+                    i = response.country.name
+                    v.append(i)
                 
             with geoip2.database.Reader('GeoLite2-ASN.mmdb') as reader:
                 for k, v in a_dict.items():
                     response = reader.asn(k)
                     i = response.autonomous_system_organization
                     v.append(i)
+                    
+                for k, v in b_dict.items():
+                    response = reader.asn(k)
+                    i = response.autonomous_system_organization
+                    v.append(i)
             
             ### END add geoip data to dict
             
-            # converts the dict to json
+            # converts the dicts to json, edits code to make prettier when rendered
             check_wpattack = json.dumps(a_dict, separators=(',', ':')).replace("],", "\n")
             check_wpattack = check_wpattack.translate(str.maketrans({'{': '', '}': '', '"': '', '[': '', ']': '', ',': ' - ', ':': ': '}))
+            
+            check_botattack = json.dumps(b_dict, separators=(',', ':')).replace("],", "\n")
+            check_botattack = check_botattack.translate(str.maketrans({'{': '', '}': '', '"': '', '[': '', ']': '', ',': ' - ', ':': ': '}))
             
             # outputs to diskcheck_results.html and renders the ssh command results
             #return jsonify(json.dumps(a_dict))
             return render_template('botwpcheck_results.html',  
-                                    check_wpattack=check_wpattack, str_atkcheck=str_atkcheck)
+                                    check_wpattack=check_wpattack, str_atkcheck=str_atkcheck,
+                                    check_botattack=check_botattack, str_botcheck=str_botcheck,
+                                    sshhost=sshhost,)
         
         
     return render_template('botwpcheck.html',
