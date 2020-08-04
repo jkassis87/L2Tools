@@ -14,3 +14,4 @@ In r1check, have com_kernelmods return output based on com_kernelver results
 Update code in botwpcheck_results.html and route
 Update code in customcommand_results.html and route
 Update code in timecheck_results.html and route
+In botwpcheck, the ssh command prints the count on the right, awk doesn't print it, wc does, may be possible to rework it and simplify things
