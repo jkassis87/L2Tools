@@ -288,13 +288,13 @@ def customcommand():
 
         #### END prepares ssh commands to run
 
-        # logs in to host, runs commands, outputs results to new window
-        #with shell:
-            #result = shell.run(["uptime"])
-            #return(result.output)        
-        return render_template('customcommand_results.html',
-                                com_custom=com_custom, str_custom=str_custom,
-                                sshhost=sshhost)
+        # logs in to host, runs commands, outputs results to new window     
+        if re.match("rm", sshcustom):
+            return "command not allowed"
+        else:
+            return render_template('customcommand_results.html',
+                                    com_custom=com_custom, str_custom=str_custom,
+                                    sshhost=sshhost)
                         
     return render_template('customcommand.html',
         title='Custom Command')
