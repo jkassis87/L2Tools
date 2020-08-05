@@ -245,16 +245,26 @@ def timecheck():
                         port = sshport,
                         missing_host_key=spur.ssh.MissingHostKey.accept)
                         
+        # options in ssh command                        
+        sshsite = request.form['sshsite']
+        sshtime = request.form['sshtime']
+        
         #### START prepares ssh commands to run                        
+
+        if sshsite == 'all':
+            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshtime + r'" /home/*/logs/* /home/*/access-logs/*'])
+            str_accesslog = r'zgrep "' + sshtime + r'" /home/*/logs/* /home/*/access-logs/*'
+        else:
+            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshtime + '" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite])
+            str_accesslog = r'zgrep "' + sshtime + r'" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite
 
 
         #### END prepares ssh commands to run
         
-        # logs in to host, runs commands, outputs results to new window
-        #with shell:
-            #result = shell.run(["uptime"])
-            #return(result.output)
-        return render_template('timecheck_results.html')
+        return render_template('timecheck_results.html',
+                                com_accesslog=com_accesslog, str_accesslog=str_accesslog,
+                                sshhost=sshhost, sshsite=sshsite
+                                )
         
     return render_template('timecheck.html',
         title='Find what happend around a certain time')

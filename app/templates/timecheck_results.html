@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h3>Command: {{ ssh_bigdirs }}<h3>
-	<h3>Command: {{ ssh_bigfiles }}<h3>
-	<h3>Command: {{ ssh_bigfilesall }}<h3>
+
+	<strong>Query Details</strong><br/>
+	<strong>Host:</strong> {{ sshhost }}
+	<strong>Website/cPanel:</strong> {{ sshsite }}
+	<br/><br/>
+	
+	<details>
+		<summary>View cPanel user logs</summary>
+	<strong>Title:</strong> Search home/user/access-logs/ and home/user/logs/
+	<br/>
+		<strong>Command:</strong> {{ str_accesslog }}<br/>
+		<strong>Results</strong>
+		<pre> {{ com_accesslog.output.decode() }} </pre>
+	<br/>
+	<details>
+	<br><br>
+		
 {% endblock %}
