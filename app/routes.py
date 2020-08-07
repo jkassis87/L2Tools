@@ -1,6 +1,6 @@
 from flask import render_template, request, make_response, jsonify
 from app import app
-import spur, sys, re, geoip2.database, json
+import spur, sys, re, geoip2.database, json, sys
 
 @app.route('/')
 @app.route('/index')
@@ -144,7 +144,8 @@ def wpcheck():
             #### START prepares ssh commands to run
             
             # checks access logs for xmlrpc and wp-login hits
-            com_atkcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\' |  awk '{print $1}' | sort | uniq -c | sort -n"])
+            #com_atkcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -iE 'xmlrpc|wp-login' |  awk '{print $1 " " $12}' | sort | uniq -c | awk '{print $2 " " $1 " " $3}'"])
+            com_atkcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -iE 'xmlrpc|wp-login' |  awk '{print $1 " " $12}' | sort | uniq -c"])
             str_atkcheck = r"less /home/*/access-logs/* | grep -i 'xmlrpc\|wp-login\' |  awk '{print $1}' | sort | uniq -c | sort -n"
             
             com_botcheck = shell.run(["sh", "-c", r"less /home/*/access-logs/* | grep -i 'semrush\|dotbot\|mj12\|ahrefs\|yandex\' |  awk '{print $1}' | sort | uniq -c | sort -n"])
@@ -154,6 +155,10 @@ def wpcheck():
             
             ### START converts the command outputs from binary to dict
             
+            print('#########################################')
+            print("changes com_atkcheck (a) and com_botcheck (b) type from binary to multiline str")
+            print('#########################################')
+            
             # changes com_atkcheck (a) and com_botcheck (b) type from binary to multiline str
             a_str = com_atkcheck.output.decode()
             a_str = a_str.splitlines()
@@ -161,25 +166,71 @@ def wpcheck():
             b_str = com_botcheck.output.decode()
             b_str = b_str.splitlines()
             
-            # converts atkcheck_str (a) and com_botcheck (b) from multiline str to list
-            a_str = [re.sub('     ', '', i) for i in a_str]
+            print('#########################################')
+            print("changes com_atkcheck (a) and com_botcheck (b) type from binary to multiline str")
+            print(a_str, file=sys.stderr)
+            print('#########################################')
             
+            # converts atkcheck_str (a) and com_botcheck (b) from multiline str to list
+            
+            a_str = [re.sub('      ', '', i) for i in a_str]
+            b_str = [re.sub('      ', '', i) for i in b_str]
+            a_str = [re.sub('     ', '', i) for i in a_str]
             b_str = [re.sub('     ', '', i) for i in b_str]
             
-            # turns list into dict
-            a_dict = {k:v for k,v in (x.split(' ') for x in a_str) }
+            print('#########################################')
+            print("turns multiline string into list")
+            print(a_str, file=sys.stderr)
+            print('#########################################')
             
-            b_dict = {k:v for k,v in (x.split(' ') for x in b_str) } 
+            # separates the user agent into it's own list item
+            a_list = []
             
-            # swaps the key and value, makes the IP address the key
-            a_dict = {v:k for (k, v) in a_dict.items()}
+            for i in a_str:
+                i = i.split('"')
+                a_list.extend(i)
+                
+            b_list = []    
+            for i in b_str:
+                i = i.split('"')
+                b_list.extend(i)
             
-            b_dict = {v:k for (k, v) in b_dict.items()}
+            print('#########################################')
+            print("separates the user aged into it's own list item")
+            print(a_list, file=sys.stderr)
+            print('#########################################')
             
-            # converts values in the dict from str into list, to allow multiple values per key (IP address)
-            a_dict = {k:[v] for (k, v) in a_dict.items()}
+            # separates the IP and count into their own list items
+            a_listb = []
+            for i in a_list:
+                i = i.split(" ", 1)
+                a_listb.extend(i)
+                
+            b_listb = []
+            for i in a_list:
+                i = i.split(" ", 1)
+                b_listb.extend(i)
+
+            print('#########################################')
+            print("separates the IP and count into their own list items")
+            print(a_listb, file=sys.stderr)
+            print('#########################################')             
+
+            # separates the IP and count into their own list items
+             
+            # converts the lists into dicts
+            a_dict = {}
+            for i, j, k in zip(a_listb[0::3], a_listb[1::3], a_listb[2::3]):
+                a_dict.update( {j: [i, k]} )
+                
+            b_dict = {}
+            for i, j, k in zip(b_listb[0::3], b_listb[1::3], b_listb[2::3]):
+                b_dict.update( {j: [i, k]} )
             
-            b_dict = {k:[v] for (k, v) in b_dict.items()}
+            print('#########################################')
+            print("converts the lists into dicts")
+            print(a_dict, file=sys.stderr)
+            print('#########################################')
             
             ### END converts the command outputs from binary to dict
             
@@ -308,4 +359,3 @@ def customcommand():
                         
     return render_template('customcommand.html',
         title='Custom Command')
-
