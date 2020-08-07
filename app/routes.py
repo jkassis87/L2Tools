@@ -108,13 +108,16 @@ def diskcheck():
             com_largedirs = shell.run(["sh", "-c", r"du -Sh /home/ /backup/ | sort -rh | head -20"])
             str_largedirs = r"du -Sh /home/ /backup/ | sort -rh | head -20"
             
+            # gets hostname, for ticket template
+            com_hostname = shell.run(["sh", "-c", r"hostname"])
+            
             #### END prepares ssh commands to run
             
             # outputs to diskcheck_results.html and renders the ssh command results
             return render_template('diskcheck_results.html', 
                                     com_largefiles=com_largefiles, str_largefiles=str_largefiles,
                                     com_largedirs=com_largedirs, str_largedirs=str_largedirs,
-                                    com_df=com_df, str_df=str_df,
+                                    com_df=com_df, str_df=str_df, com_hostname=com_hostname,
                                     sshhost=sshhost, ssh_minfilesize=ssh_minfilesize)
                 
     return render_template('diskcheck.html',
