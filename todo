@@ -1,6 +1,3 @@
-Add SSH commands for r1check
-Add SSH commands for botwpcheck
-Add SSH commands for diskcheck
 Add SSH commands for timecheck
 Custom Comands - Block rm and rmdir (add error checking)
 Time Check - add calendar and ssh code to account for timezone
@@ -11,7 +8,4 @@ In r1check, customise r1server dropdown options based on hosttype answer
 In r1check, add smarts in CURRENT to determine current r1soft server
 In r1check, add smarts to check route
 In r1check, have com_kernelmods return output based on com_kernelver results
-Update code in botwpcheck_results.html and route
-Update code in customcommand_results.html and route
-Update code in timecheck_results.html and route
-In botwpcheck, the ssh command prints the count on the right, awk doesn't print it, wc does, may be possible to rework it and simplify things
+In botwpcheck, have a "submit" button that checks the python dicts for a string and adds all the offending IP's into csf.deny

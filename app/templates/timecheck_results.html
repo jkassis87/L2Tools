@@ -8,14 +8,36 @@
 	<br/><br/>
 	
 	<details>
-		<summary>View cPanel user logs</summary>
+		<summary>Click to view cPanel user logs</summary>
 	<strong>Title:</strong> Search home/user/access-logs/ and home/user/logs/
 	<br/>
 		<strong>Command:</strong> {{ str_accesslog }}<br/>
 		<strong>Results</strong>
 		<pre> {{ com_accesslog.output.decode() }} </pre>
 	<br/>
+	</details>
+	
 	<details>
+		<summary>Click to view Apache error logs</summary>
+	<strong>Title:</strong> Search /user/local/apache/log/error_log
+	<br/>
+		<strong>Command:</strong> {{ str_accesslog }}<br/>
+		<strong>Results</strong>
+		<pre> {{ com_accesslog.output.decode() }} </pre>
+	<br/>
+	</details>
+	
+	
+	<details>
+		<summary>Click to view MySQL error logs</summary>
+	<strong>Title:</strong> Search the mysql error logs
+	<br/>
+		<strong>Command:</strong> {{ str_accesslog }}<br/>
+		<strong>Results</strong>
+		<pre> {{ com_accesslog.output.decode() }} </pre>
+	<br/>
+	</details>
+	
 	<br><br>
 		
 {% endblock %}

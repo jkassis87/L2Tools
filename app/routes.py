@@ -301,16 +301,35 @@ def timecheck():
                         
         # options in ssh command                        
         sshsite = request.form['sshsite']
-        sshtime = request.form['sshtime']
+        sshaccesstime = request.form['accesstime']
+        sshapachetime = request.form['sshapachetime']
+        sshmysqltime = request.form['sshmysqltime']
         
         #### START prepares ssh commands to run                        
-
+        
+        # command to check cPanel access logs
         if sshsite == 'all':
-            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshtime + r'" /home/*/logs/* /home/*/access-logs/*'])
-            str_accesslog = r'zgrep "' + sshtime + r'" /home/*/logs/* /home/*/access-logs/*'
+            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/*'])
+            str_accesslog = r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/*'
         else:
-            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshtime + '" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite])
-            str_accesslog = r'zgrep "' + sshtime + r'" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite
+            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite])
+            str_accesslog = r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite
+            
+        # command to check Apache error logs
+        if sshsite == 'all':
+            com_apacheerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log'])
+            str_apacheerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log*'
+        else:
+            com_apacheerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + '" /usr/local/apache/logs/error_log | grep ' + sshsite])
+            str_apacheerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log | grep ' + sshsite
+            
+        # command to check MySQL error logs
+        if sshsite == 'all':
+            com_mysqlerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log'])
+            str_mysqlerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log*'
+        else:
+            com_mysqlerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + '" /usr/local/apache/logs/error_log | grep ' + sshsite])
+            str_mysqlerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log | grep ' + sshsite
 
 
         #### END prepares ssh commands to run
