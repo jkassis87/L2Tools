@@ -180,11 +180,7 @@ def wpcheck():
             b_str = [re.sub('      ', '', i) for i in b_str]
             a_str = [re.sub('     ', '', i) for i in a_str]
             b_str = [re.sub('     ', '', i) for i in b_str]
-            
-            print('#########################################')
-            print("turns multiline string into list")
-            print(a_str, file=sys.stderr)
-            print('#########################################')
+           
             
             # separates the user agent into it's own list item
             a_list = []
@@ -294,25 +290,46 @@ def timecheck():
         #### START prepares ssh commands to run                        
         
         # command to check cPanel access logs
-        com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite])
-        str_accesslog = r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite
+        com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/*'],
+                        allow_error=True)
+        str_accesslog = r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/*'
             
+        
+        print('#########################################')
+        print("Access Logs")
+        print(str_accesslog, file=sys.stderr)
+        print('#########################################')
+        
+        
         # command to check Apache error logs
-        com_apacheerror = shell.run(["sh", "-c", r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log | grep ' + sshsite])
-        str_apacheerror = r'grep "' + sshapachetime + r'" /usr/local/apache/logs/error_log | grep ' + sshsite
+        com_apacheerror = shell.run(["sh", "-c", r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log'])
+        str_apacheerror = r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log'
+        
+        print('#########################################')
+        print("Apache Error Logs")
+        print(str_apacheerror, file=sys.stderr)
+        print('#########################################')
         
         # command to check MySQL error logs
-        
         # finds error log file
-        findmycnf = shell.run(["sh", "-c", r'grep log-error= /etc/my.cnf' ])
+        findmycnf = shell.run(["sh", "-c", r'grep log-error= /etc/my.cnf' ],
+                        allow_error=True)
         findmycnf = findmycnf.output.decode()
         findmycnf = findmycnf[10:]
-        print(a_str, file=sys.stderr)
-        
-        
-        com_mysqlerror = shell.run(["sh", "-c", r'grep "' + sshmysqltime + r'" /usr/local/apache/logs/error_log'])
-        str_mysqlerror = r'grep "' + sshmysqltime + r'" /usr/local/apache/logs/error_log*'
 
+        print('#########################################')
+        print("Find MyCNF")
+        print(findmycnf, file=sys.stderr)
+        print('#########################################')
+
+        com_mysqlerror = shell.run(["sh", "-c", f'grep {sshmysqltime} {findmycnf}'],
+                        allow_error=True)
+        str_mysqlerror = f'grep {sshmysqltime} {findmycnf}'
+
+        print('#########################################')
+        print("MySQL Error Logs")
+        print(str_mysqlerror, file=sys.stderr)
+        print('#########################################')
 
         #### END prepares ssh commands to run
         
