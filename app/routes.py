@@ -197,11 +197,7 @@ def wpcheck():
             for i in b_str:
                 i = i.split('"')
                 b_list.extend(i)
-            
-            print('#########################################')
-            print("separates the user aged into it's own list item")
-            print(a_list, file=sys.stderr)
-            print('#########################################')
+
             
             # separates the IP and count into their own list items
             a_listb = []
@@ -214,11 +210,6 @@ def wpcheck():
                 i = i.split(" ", 1)
                 b_listb.extend(i)
 
-            print('#########################################')
-            print("separates the IP and count into their own list items")
-            print(a_listb, file=sys.stderr)
-            print('#########################################')             
-
             # separates the IP and count into their own list items
              
             # converts the lists into dicts
@@ -229,11 +220,6 @@ def wpcheck():
             b_dict = {}
             for i, j, k in zip(b_listb[0::3], b_listb[1::3], b_listb[2::3]):
                 b_dict.update( {j: [i, k]} )
-            
-            print('#########################################')
-            print("converts the lists into dicts")
-            print(a_dict, file=sys.stderr)
-            print('#########################################')
             
             ### END converts the command outputs from binary to dict
             
@@ -301,43 +287,40 @@ def timecheck():
                         
         # options in ssh command                        
         sshsite = request.form['sshsite']
-        sshaccesstime = request.form['accesstime']
+        sshaccesstime = request.form['sshaccesstime']
         sshapachetime = request.form['sshapachetime']
         sshmysqltime = request.form['sshmysqltime']
         
         #### START prepares ssh commands to run                        
         
         # command to check cPanel access logs
-        if sshsite == 'all':
-            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/*'])
-            str_accesslog = r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/*'
-        else:
-            com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite])
-            str_accesslog = r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite
+        com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite])
+        str_accesslog = r'zgrep "' + sshaccesstime + r'" /home/*/logs/* /home/*/access-logs/* | grep ' + sshsite
             
         # command to check Apache error logs
-        if sshsite == 'all':
-            com_apacheerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log'])
-            str_apacheerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log*'
-        else:
-            com_apacheerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + '" /usr/local/apache/logs/error_log | grep ' + sshsite])
-            str_apacheerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log | grep ' + sshsite
-            
+        com_apacheerror = shell.run(["sh", "-c", r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log | grep ' + sshsite])
+        str_apacheerror = r'grep "' + sshapachetime + r'" /usr/local/apache/logs/error_log | grep ' + sshsite
+        
         # command to check MySQL error logs
-        if sshsite == 'all':
-            com_mysqlerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log'])
-            str_mysqlerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log*'
-        else:
-            com_mysqlerror = shell.run(["sh", "-c", r'zgrep "' + sshtime + '" /usr/local/apache/logs/error_log | grep ' + sshsite])
-            str_mysqlerror = r'zgrep "' + sshtime + r'" /usr/local/apache/logs/error_log | grep ' + sshsite
+        
+        # finds error log file
+        findmycnf = shell.run(["sh", "-c", r'grep log-error= /etc/my.cnf' ])
+        findmycnf = findmycnf.output.decode()
+        findmycnf = findmycnf[10:]
+        print(a_str, file=sys.stderr)
+        
+        
+        com_mysqlerror = shell.run(["sh", "-c", r'grep "' + sshmysqltime + r'" /usr/local/apache/logs/error_log'])
+        str_mysqlerror = r'grep "' + sshmysqltime + r'" /usr/local/apache/logs/error_log*'
 
 
         #### END prepares ssh commands to run
         
         return render_template('timecheck_results.html',
                                 com_accesslog=com_accesslog, str_accesslog=str_accesslog,
-                                sshhost=sshhost, sshsite=sshsite
-                                )
+                                com_apacheerror=com_apacheerror, str_apacheerror=str_apacheerror,
+                                com_mysqlerror=com_mysqlerror, str_mysqlerror=str_mysqlerror,
+                                sshhost=sshhost, sshsite=sshsite)
         
     return render_template('timecheck.html',
         title='Find what happend around a certain time')
