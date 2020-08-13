@@ -286,12 +286,12 @@ def timecheck():
         sshaccesstime = request.form['sshaccesstime']
         sshapachetime = request.form['sshapachetime']
         sshmysqltime = request.form['sshmysqltime']
+        sshsarday = request.form['sshsarday']
         
         #### START prepares ssh commands to run                        
         
         # command to check cPanel access logs
-        com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/*'],
-                        allow_error=True)
+        com_accesslog = shell.run(["sh", "-c", r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/*'])
         str_accesslog = r'zgrep "' + sshaccesstime + '" /home/*/logs/* /home/*/access-logs/*'
             
         
@@ -312,8 +312,7 @@ def timecheck():
         
         # command to check MySQL error logs
         # finds error log file
-        findmycnf = shell.run(["sh", "-c", r'grep log-error= /etc/my.cnf' ],
-                        allow_error=True)
+        findmycnf = shell.run(["sh", "-c", r'grep log-error= /etc/my.cnf' ])
         findmycnf = findmycnf.output.decode()
         findmycnf = findmycnf[10:]
 
@@ -322,14 +321,29 @@ def timecheck():
         print(findmycnf, file=sys.stderr)
         print('#########################################')
 
-        com_mysqlerror = shell.run(["sh", "-c", f'grep {sshmysqltime} {findmycnf}'],
-                        allow_error=True)
+        com_mysqlerror = shell.run(["sh", "-c", f'grep {sshmysqltime} {findmycnf}'])
         str_mysqlerror = f'grep {sshmysqltime} {findmycnf}'
 
         print('#########################################')
         print("MySQL Error Logs")
         print(str_mysqlerror, file=sys.stderr)
         print('#########################################')
+        
+        # sar memory stats
+        com_sarmem = shell.run(["sh", "-c", f'sar -r -f /var/log/sa/sa{sshsarday}'])
+        str_sarmem = f'sar -r -f /var/log/sa/sa{sshsarday}'
+        
+        # sar cpu stats
+        com_sarcpu = shell.run(["sh", "-c", f'sar -u -f /var/log/sa/sa{sshsarday}'])
+        str_sarcpu = f'sar -u -f /var/log/sa/sa{sshsarday}'
+        
+        # sar load average stats
+        com_sarload = shell.run(["sh", "-c", f'sar -u -f /var/log/sa/sa{sshsarday}'])
+        str_sarload = f'sar -u -f /var/log/sa/sa{sshsarday}'
+
+        # sar io stats
+        com_sario = shell.run(["sh", "-c", f'sar -b -f /var/log/sa/sa{sshsarday}'])
+        str_sario = f'sar -b -f /var/log/sa/sa{sshsarday}'
 
         #### END prepares ssh commands to run
         
@@ -337,6 +351,10 @@ def timecheck():
                                 com_accesslog=com_accesslog, str_accesslog=str_accesslog,
                                 com_apacheerror=com_apacheerror, str_apacheerror=str_apacheerror,
                                 com_mysqlerror=com_mysqlerror, str_mysqlerror=str_mysqlerror,
+                                com_sarmem=com_sarmem, str_sarmem=str_sarmem,
+                                com_sarcpu=com_sarcpu, str_sarcpu=str_sarcpu,
+                                com_sarload=com_sarload, str_sarload=str_sarload,
+                                com_sario=com_sario, str_sario=str_sario,
                                 sshhost=sshhost, sshsite=sshsite)
         
     return render_template('timecheck.html',
