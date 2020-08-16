@@ -111,6 +111,12 @@ def diskcheck():
             # gets hostname, for ticket template
             com_hostname = shell.run(["sh", "-c", r"hostname"])
             
+            # gets percentage used space
+            com_spaceused = shell.run(["sh", "-c", r"df -h -t ext4 -t ext3 | grep -v Filesystem  | awk 'FNR == 1 {print $5}'"])
+            
+            # gets size of free space
+            com_spacefree = shell.run(["sh", "-c", r"df -h -t ext4 -t ext3 | grep -v Filesystem  | awk 'FNR == 1 {print $4}'"])
+            
             #### END prepares ssh commands to run
             
             # outputs to diskcheck_results.html and renders the ssh command results
@@ -118,6 +124,7 @@ def diskcheck():
                                     com_largefiles=com_largefiles, str_largefiles=str_largefiles,
                                     com_largedirs=com_largedirs, str_largedirs=str_largedirs,
                                     com_df=com_df, str_df=str_df, com_hostname=com_hostname,
+                                    com_spaceused=com_spaceused, com_spacefree=com_spacefree,
                                     sshhost=sshhost, ssh_minfilesize=ssh_minfilesize)
                 
     return render_template('diskcheck.html',

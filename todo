@@ -9,3 +9,4 @@ In r1check, add smarts in CURRENT to determine current r1soft server
 In r1check, add smarts to check route
 In r1check, have com_kernelmods return output based on com_kernelver results
 In botwpcheck, have a "submit" button that checks the python dicts for a string and adds all the offending IP's into csf.deny
+DiskCheck use awk and grep -v and set to fill out other parts of form eg df -h -t ext4 -t ext3 | grep -v Filesystem  | awk '{print $5}'
