@@ -310,7 +310,7 @@ def timecheck():
         
         
         # command to check Apache error logs
-        com_apacheerror = shell.run(["sh", "-c", r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log' + f' | grep {shsite}' ])
+        com_apacheerror = shell.run(["sh", "-c", r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log' + f" | awk '/{sshsite}/'" ])
         str_apacheerror = r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log'
         
         # command to check MySQL error logs
