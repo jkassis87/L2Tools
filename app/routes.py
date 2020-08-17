@@ -1,6 +1,6 @@
 from flask import render_template, request, make_response, jsonify
 from app import app
-import spur, sys, re, geoip2.database, json, sys
+import spur, sys, re, geoip2.database, json
 
 @app.route('/')
 @app.route('/index')
@@ -313,11 +313,6 @@ def timecheck():
         com_apacheerror = shell.run(["sh", "-c", r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log'])
         str_apacheerror = r'grep "' + sshapachetime + '" /usr/local/apache/logs/error_log'
         
-        print('#########################################')
-        print("Apache Error Logs")
-        print(str_apacheerror, file=sys.stderr)
-        print('#########################################')
-        
         # command to check MySQL error logs
         # finds error log file
         findmycnf = shell.run(["sh", "-c", r'grep log-error= /etc/my.cnf' ],
@@ -325,59 +320,30 @@ def timecheck():
         findmycnf = findmycnf.output.decode()
         findmycnf = findmycnf[10:]
 
-        print('#########################################')
-        print("Find MyCNF")
-        print(findmycnf, file=sys.stderr)
-        print('#########################################')
-
         com_mysqlerror = shell.run(["sh", "-c", f'grep {sshmysqltime} {findmycnf}'],
                         allow_error=True)
         str_mysqlerror = f'grep {sshmysqltime} {findmycnf}'
-
-        print('#########################################')
-        print("MySQL Error Logs")
-        print(str_mysqlerror, file=sys.stderr)
-        print('#########################################')
         
         # sar memory stats
         com_sarmem = shell.run(["sh", "-c", f'sar -r -f /var/log/sa/sa{sshsarday}'],
                                     allow_error=True)
         str_sarmem = f'sar -r -f /var/log/sa/sa{sshsarday}'
         
-        print('#########################################')
-        print("sar memory")
-        print(str_sarmem, file=sys.stderr)
-        print('#########################################')
-        
         # sar cpu stats
         com_sarcpu = shell.run(["sh", "-c", f'sar -u -f /var/log/sa/sa{sshsarday}'],
                                     allow_error=True)
         str_sarcpu = f'sar -u -f /var/log/sa/sa{sshsarday}'
-        
-        print('#########################################')
-        print("sar cpu")
-        print(str_sarcpu, file=sys.stderr)
-        print('#########################################')
         
         # sar load average stats
         com_sarload = shell.run(["sh", "-c", f'sar -u -f /var/log/sa/sa{sshsarday}'],
                                     allow_error=True)
         str_sarload = f'sar -u -f /var/log/sa/sa{sshsarday}'
         
-        print('#########################################')
-        print("sar cpu")
-        print(str_sarload, file=sys.stderr)
-        print('#########################################')
-        
         # sar io stats
         com_sario = shell.run(["sh", "-c", f'sar -b -f /var/log/sa/sa{sshsarday}'],
                                     allow_error=True)
         str_sario = f'sar -b -f /var/log/sa/sa{sshsarday}'
-        
-        print('#########################################')
-        print("sar cpu")
-        print(str_sario, file=sys.stderr)
-        print('#########################################')
+
 
         #### END prepares ssh commands to run
         
